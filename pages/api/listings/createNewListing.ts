@@ -47,6 +47,7 @@ export default async function handler(
       userId: user.id,
       ...req.body,
       price: parseInt(req.body.price, 10),
+      location: req.body.location, // Add this line
     };
 
     console.log("Data from server", adData);
