@@ -4,9 +4,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 
-async function createNewAd(adData: Omit<Listing, 'id' | 'createdAt' | 'updatedAt'> & { userId: string }) {
+async function createNewAd(adData: Omit<Listing, 'id' | 'createdAt' | 'updatedAt'> & { userId: string, files: { path: string }[] }) {
   try {
-    const { userId, categoryId, ...restAdData } = adData;
+    const { userId, categoryId, files, tags, canDeliver, ...restAdData } = adData;
     const newAd = await prisma.listing.create({
       data: {
         ...restAdData,
@@ -15,7 +15,14 @@ async function createNewAd(adData: Omit<Listing, 'id' | 'createdAt' | 'updatedAt
         },
         category: {
           connect: { id: categoryId }
-        }
+        },
+        images: {
+          create: files.map(file => ({ url: file.path }))
+        },
+        tags: {
+          connect: tags.map(tagId => ({ id: tagId }))
+        },
+        canDeliver: canDeliver === 'yes',
       },
     });
     return newAd;
