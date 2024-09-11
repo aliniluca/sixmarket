@@ -67,6 +67,7 @@ const adData = {
   price: parseInt(req.body.price, 10),
   userId: user.id,
   location: req.body.location || `${req.body.city}, ${req.body.province}`,
+  tags: req.body.tags || [], // Ensure tags are passed, default to empty array if not present
 };
 
 console.log("Data from server", adData);
