@@ -4,7 +4,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 
-async function createNewAd(adData: Omit<Listing, 'id' | 'createdAt' | 'updatedAt'> & { userId: string, files: { path: string }[] }) {
+async function createNewAd(adData: Omit<Listing, 'id' | 'createdAt' | 'updatedAt'> & { 
+  userId: string, 
+  files: { path: string }[],
+  tags: string[]
+}) {
   try {
     const { userId, categoryId, files, tags, canDeliver, ...restAdData } = adData;
     const newAd = await prisma.listing.create({
