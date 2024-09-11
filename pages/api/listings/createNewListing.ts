@@ -7,7 +7,12 @@ import { authOptions } from "../auth/[...nextauth]";
 async function createNewAd(adData: Omit<Listing, 'id' | 'createdAt' | 'updatedAt'>) {
   try {
     const newAd = await prisma.listing.create({
-      data: adData,
+      data: {
+        ...adData,
+        user: {
+          connect: { id: adData.userId }
+        }
+      },
     });
     return newAd;
   } catch (error: any) {
@@ -15,7 +20,6 @@ async function createNewAd(adData: Omit<Listing, 'id' | 'createdAt' | 'updatedAt
     throw new Error(`Failed to create new ad: ${error.message}`);
   }
 }
-
 // POST '/api/listings/createNewListing'
 export default async function handler(
   req: NextApiRequest,
@@ -43,17 +47,15 @@ export default async function handler(
       return res.status(404).json({ error: "User not found" });
     }
 
-    const adData = {
-      userId: user.id,
-      ...req.body,
-      price: parseInt(req.body.price, 10),
-      location: req.body.location, // Add this line
-    };
+   const adData = {
+  ...req.body,
+  price: parseInt(req.body.price, 10),
+  userId: user.id,
+  location: req.body.location || `${req.body.city}, ${req.body.province}`,
+};
 
-    console.log("Data from server", adData);
-
-    const newAd = await createNewAd(adData);
-
+console.log("Data from server", adData);
+const newAd = await createNewAd(adData);
     res.status(201).json(newAd);
   } catch (error: any) {
     console.error("API error:", error);
