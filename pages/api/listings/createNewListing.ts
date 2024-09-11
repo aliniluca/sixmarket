@@ -6,12 +6,15 @@ import { authOptions } from "../auth/[...nextauth]";
 
 async function createNewAd(adData: Omit<Listing, 'id' | 'createdAt' | 'updatedAt'> & { userId: string }) {
   try {
-    const { userId, ...restAdData } = adData;
+    const { userId, categoryId, ...restAdData } = adData;
     const newAd = await prisma.listing.create({
       data: {
         ...restAdData,
         user: {
           connect: { id: userId }
+        },
+        category: {
+          connect: { id: categoryId }
         }
       },
     });
