@@ -98,9 +98,20 @@ const NewListing: NextPageWithLayout = () => {
     },
   });
 
-  const handleSubmit = async (values: any) => {
-    console.log(values);
-  };
+const handleSubmit = async (values: IFormValues) => {
+  console.log("Submitting form with values:", values);
+  try {
+    const response = await axios.post('/api/listings/createNewListing', values);
+    console.log("New listing created:", response.data);
+    // Redirect to /profile/my-listings
+    window.location.href = '/profile/my-listings';
+  } catch (error) {
+    console.error("Error creating listing:", error);
+    // Handle error (e.g., show error message to user)
+    alert("There was an error creating the listing. Please try again.");
+  }
+};
+
 
   return (
     <>
@@ -125,7 +136,7 @@ const NewListing: NextPageWithLayout = () => {
         description="Complete the steps below to create a new listing."
       />
 
-      <form onSubmit={form.onSubmit((values) => console.log(values))}>
+     <form onSubmit={form.onSubmit(handleSubmit)}>
         <Dropzone
           onDrop={(images) => {
             form.setFieldValue("files", images);
