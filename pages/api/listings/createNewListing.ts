@@ -7,7 +7,8 @@ import { authOptions } from "../auth/[...nextauth]";
 async function createNewAd(adData: Omit<Listing, 'id' | 'createdAt' | 'updatedAt'> & { 
   userId: string, 
   files: { path: string }[],
-  tags: string[]
+  tags: string[],
+  canDeliver: string | boolean
 }) {
   try {
     const { userId, categoryId, files, tags, canDeliver, ...restAdData } = adData;
@@ -26,7 +27,7 @@ async function createNewAd(adData: Omit<Listing, 'id' | 'createdAt' | 'updatedAt
         tags: {
           connect: tags.map(tagId => ({ id: tagId }))
         },
-        canDeliver: canDeliver === 'yes',
+        canDeliver: typeof canDeliver === 'string' ? canDeliver === 'yes' : canDeliver,
       },
     });
     return newAd;
