@@ -4,13 +4,14 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 
-async function createNewAd(adData: Omit<Listing, 'id' | 'createdAt' | 'updatedAt'>) {
+async function createNewAd(adData: Omit<Listing, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) {
   try {
+    const { userId, ...restAdData } = adData;
     const newAd = await prisma.listing.create({
       data: {
-        ...adData,
+        ...restAdData,
         user: {
-          connect: { id: adData.userId }
+          connect: { id: userId }
         }
       },
     });
@@ -47,7 +48,7 @@ export default async function handler(
       return res.status(404).json({ error: "User not found" });
     }
 
-   const adData = {
+const adData = {
   ...req.body,
   price: parseInt(req.body.price, 10),
   userId: user.id,
