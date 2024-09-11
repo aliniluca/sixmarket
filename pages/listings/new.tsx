@@ -35,6 +35,7 @@ interface IFormValues {
   tags: string[];
   canDeliver: string;
   categoryId: string;
+  location : string;
 }
 
 const NewListing: NextPageWithLayout = () => {
@@ -88,6 +89,7 @@ const NewListing: NextPageWithLayout = () => {
       city: "Toronto",
       province: "Ontario",
       postalCode: "M1L4P2",
+      location: 'Unspecified', // Add this line
       tags: [
         "clgttgp8k0024r9rca5fymz8z",
         "clgttgqb6002ar9rcq6vh0wuf",
@@ -182,6 +184,11 @@ const handleSubmit = async (values: IFormValues) => {
           required
           maw={400}
         />
+       <TextInput
+  label="Location"
+  placeholder="Enter location"
+  {...form.getInputProps('location')}
+/>
         {/* Description */}
         <Textarea
           label="Description"
