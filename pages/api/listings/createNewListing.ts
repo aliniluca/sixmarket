@@ -2,12 +2,12 @@ import prisma from "@/utils/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-
+import { Condition } from "@prisma/client";
 async function createNewAd(adData: {
   userId: string;
   name: string;
   description: string;
-  condition: string;
+  condition: Condition;  // Changed from string to Condition
   price: number;
   location: string;
   tags: string[];
@@ -32,7 +32,6 @@ async function createNewAd(adData: {
     },
   });
 }
-
 // POST '/api/listings/createNewListing'
 export default async function handler(
   req: NextApiRequest,
