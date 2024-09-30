@@ -1,4 +1,5 @@
 import prisma from "@/utils/prisma";
+import { Listing } from '@prisma/client'; // If you are using Prisma
 import { NextApiRequest, NextApiResponse } from "next";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
