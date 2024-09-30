@@ -1,7 +1,27 @@
 import prisma from "@/utils/prisma";
+import { Listing } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
+
+async function CreateNewAd(adData: Listing) {
+  try {
+    const newAd = await prisma.listing.create({
+      data: adData,
+    });
+    return newAd;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
+
+// POST '/api/listings/'
+export default async function Handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const session: Session | null = await getServerSession(req, res, authOptions);
+
   if (session) {
     // POST '/api/listings/'
     if (req.method === "POST") {
@@ -15,12 +35,9 @@ import { authOptions } from "../auth/[...nextauth]";
         //     ...req.body,
         //     price: parseInt(req.body.price, 10),
         // };
+
         // console.log("Data from server", adData);
         // const newAd = await CreateNewAd(adData);
-        const userId = session.user?.id;
-        console.log(userId);
-        
-        // Additional logic for creating a listing can go here
 
         res.status(201);
       } catch (error: any) {
