@@ -25,23 +25,28 @@ export default async function Handler(
   if (session) {
     // POST '/api/listings/'
     if (req.method === "POST") {
-      console.log("sdfs");
       // @ts-expect-error - By default, session.user doesn't have ID. I added it using callbacks in `pages/api/auth/[...nextauth.ts]`
       const userId = session.user?.id;
       console.log(userId);
       try {
-        // const adData = {
-        //     userId,
-        //     ...req.body,
-        //     price: parseInt(req.body.price, 10),
-        // };
+        // Check if required properties exist in req.body
+        if (!req.body.title || !req.body.description || !req.body.price || !req.body.url) {
+          res.status(400).send({ error: "Missing required fields" });
+          return;
+        }
 
-        // console.log("Data from server", adData);
-        // const newAd = await CreateNewAd(adData);
+        const adData = {
+          userId,
+          ...req.body,
+          price: parseInt(req.body.price, 10),
+        };
 
-        res.status(201);
+        console.log("Data from server", adData);
+        const newAd = await CreateNewAd(adData);
+
+        res.status(201).json(newAd);
       } catch (error: any) {
-        console.error("API error:", error); // Add this line to log the error
+        console.error("API error:", error);
         res.status(500).send({ error: error.message });
       }
     } else {
