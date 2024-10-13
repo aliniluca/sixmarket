@@ -143,7 +143,13 @@ const IndividualListing: NextPageWithLayout<IndividualListingProps> = ({
           property="og:description"
           content={`${listingInfo?.description || ""}`}
         />
-        <meta property="og:image" content={listingInfo.images[0].url} />
+        <meta
+  property="og:image"
+  content={listingInfo.images.length > 0 && listingInfo.images[0].url 
+    ? listingInfo.images[0].url 
+    : "/default-image.png"}  // Fallback to a default image
+/>
+
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Marketplace" />
       </Head>
@@ -195,25 +201,34 @@ const IndividualListing: NextPageWithLayout<IndividualListingProps> = ({
 
       {/* Carousel and Listing Info */}
       <section className="mb-4 grid md:grid-cols-10 lg:grid-cols-12 w-full gap-2">
-        <Carousel
-          mx="auto"
-          w="100%"
-          height={400}
-          withIndicators
-          loop
-          className="md:col-span-6 lg:col-span-8"
-        >
-          {listingInfo?.images.map((image: ImageFromSchema, index: number) => (
-            <Carousel.Slide key={index} bg={"#f3f3f3"}>
-              <Image
-                src={image.url}
-                alt="d"
-                className="w-full h-full object-contain"
-                fill
-              />
-            </Carousel.Slide>
-          ))}
-        </Carousel>
+       <Carousel
+  mx="auto"
+  w="100%"
+  height={400}
+  withIndicators
+  loop
+  className="md:col-span-6 lg:col-span-8"
+>
+  {listingInfo?.images.map((image: ImageFromSchema, index: number) => (
+    image.url ? (  // Check if the URL exists
+      <Carousel.Slide key={index} bg={"#f3f3f3"}>
+        <Image
+          src={image.url}
+          alt="Listing Image"
+          className="w-full h-full object-contain"
+          fill
+        />
+      </Carousel.Slide>
+    ) : (
+      <Carousel.Slide key={index} bg={"#f3f3f3"}>
+        <div className="w-full h-full flex items-center justify-center">
+          No Image Available
+        </div>
+      </Carousel.Slide>
+    )
+  ))}
+</Carousel>
+
 
         {/* Info and message card */}
         <ListingMetaDataCard
