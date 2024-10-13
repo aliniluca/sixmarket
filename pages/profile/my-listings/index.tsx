@@ -15,9 +15,9 @@ interface IMyListingsPageProps {
   })[];
 }
 
+// Fetching data server-side
 export const getServerSideProps: GetServerSideProps = async (context: any) => {
   return requireAuthentication(context, async (session: any) => {
-    // Get listings with images, and messages
     const listingsWithImages: (Pick<
       Listing,
       "id" | "name" | "price" | "views"
@@ -44,13 +44,24 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       },
     });
 
+    // Ensure each listing has an image URL or handle missing URLs
+    const sanitizedListings = listingsWithImages.map((listing) => ({
+      ...listing,
+      images: listing.images.map((image) => ({
+        ...image,
+        url: image.url || null, // Set null if url is missing
+      })),
+    }));
+
     return {
       props: {
-        listingsWithImages: JSON.parse(JSON.stringify(listingsWithImages)),
+        listingsWithImages: JSON.parse(JSON.stringify(sanitizedListings)),
       },
     };
   });
 };
+
+// Main component for rendering the My Listings page
 const MyListingsPage: NextPageWithLayout<IMyListingsPageProps> = ({
   listingsWithImages,
 }) => {
@@ -60,12 +71,8 @@ const MyListingsPage: NextPageWithLayout<IMyListingsPageProps> = ({
         <title>{`My Listings | Marketplace`}</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
         <meta name="description" content="View and edit your listings." />
-
         <meta property="og:title" content={`My Listings | Marketplace`} />
-        <meta
-          property="og:description"
-          content="View and edit your listings."
-        />
+        <meta property="og:description" content="View and edit your listings." />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Marketplace" />
       </Head>
@@ -76,13 +83,14 @@ const MyListingsPage: NextPageWithLayout<IMyListingsPageProps> = ({
       />
 
       <section>
-        {/* Listings */}
+        {/* Listings table */}
         <MyListingsTable listingsWithImages={listingsWithImages} />
       </section>
     </>
   );
 };
 
-export default MyListingsPage;
-
+// Wrap the page in the Primary Layout
 MyListingsPage.getLayout = (page) => <PrimaryLayout>{page}</PrimaryLayout>;
+
+export default MyListingsPage;
