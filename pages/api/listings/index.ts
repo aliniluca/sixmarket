@@ -67,11 +67,14 @@ export default async function Handler(
     if (req.method === "GET") {
       try {
         // Fetch the user's listings
+        console.log(`Fetching listings for user: ${userId}`);
         const userListings = await getUserListings(userId);
+        console.log(`Successfully fetched ${userListings.length} listings`);
         res.status(200).json(userListings);
       } catch (error: any) {
         console.error("API error:", error);
-        res.status(500).json({ error: error.message });
+        console.error("Stack trace:", error.stack);
+        res.status(500).json({ error: `Failed to fetch listings: ${error.message}` });
       }
     }
     // Handle POST requests (create new listing)
@@ -86,7 +89,8 @@ export default async function Handler(
       res.status(405).json({ error: "Method Not Allowed" });
     }
   } catch (error: any) {
-    console.error("Unexpected error in handler:", error);
-    res.status(500).json({ error: error.message });
+  console.error("Unexpected error in handler:", error);
+    console.error("Stack trace:", error.stack);
+    res.status(500).json({ error: `Unexpected error: ${error.message}` });
   }
 }
